@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.DS_Store
+docs/EDEN_SEARCH_RESULT.md
+docs/EDEN_SEARCH_RESULT.json
