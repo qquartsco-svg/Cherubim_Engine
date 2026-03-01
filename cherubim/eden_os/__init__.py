@@ -106,10 +106,16 @@ from .eve import (
 
 # ── LAYER 5  lineage ─────────────────────────────────────────────────────────
 from .lineage import (
+    AdamProcessMode,
+    ForkingState,
+    ExpulsionRecord,
+    OffspringRecord,
     LineageNode,
     LineageEdge,
     LineageGraph,
     GENERATION_NAMES_LORE,
+    CAIN_CONFIG,
+    ABEL_CONFIG,
     make_lineage,
 )
 
@@ -173,8 +179,11 @@ __all__ = [
     "Adam", "make_adam",
     "SuccessionEvent", "Eve", "make_eve",
     # LAYER 5 — 계승
+    "AdamProcessMode",
+    "ForkingState", "ExpulsionRecord", "OffspringRecord",
     "LineageNode", "LineageEdge", "LineageGraph",
-    "GENERATION_NAMES_LORE", "make_lineage",
+    "GENERATION_NAMES_LORE", "CAIN_CONFIG", "ABEL_CONFIG",
+    "make_lineage",
     # LAYER 6 — 실행기
     "TickLog", "EdenOSRunner", "make_eden_os_runner",
     # LAYER 4.5a — 탄생 순간 로그
