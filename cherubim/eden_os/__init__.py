@@ -143,6 +143,16 @@ from .observer_mode import (
     OBSERVER_CONFIG,
 )
 
+# ── LAYER 4.5c  genesis_narrative — 창세기 지리 서사 체인 ─────────────────────
+from .genesis_narrative import (
+    LocationNode,
+    GenesisChain,
+    GenesisNarrative,
+    make_genesis_narrative,
+    NARRATIVE_LOCATIONS,
+    CAIN_ABEL_CONFIG,
+)
+
 __all__ = [
     # LAYER 0 — 환경
     "EdenWorldEnv", "BandInfo", "make_eden_world",
@@ -175,4 +185,7 @@ __all__ = [
     "ObservationFrame", "InternalObserver",
     "ExternalObserver", "RelativeEvent", "RelativeObserver",
     "make_observer", "OBSERVER_CONFIG",
+    # LAYER 4.5c — 창세기 지리 서사
+    "LocationNode", "GenesisChain", "GenesisNarrative",
+    "make_genesis_narrative", "NARRATIVE_LOCATIONS", "CAIN_ABEL_CONFIG",
 ]
