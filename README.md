@@ -5,6 +5,14 @@
 
 ---
 
+| | |
+|---|---|
+| **Repo** | `Cherubim_Engine` |
+| **Package** | `cherubim` |
+| **Core class** | `EdenSearchEngine` |
+
+---
+
 창세기에서 **체루빔(Cherubim)** 은 에덴 동산의 입구를 지키며
 생명나무로 가는 길을 스캔하는 존재다.
 
@@ -12,7 +20,7 @@
 행성의 물리 파라미터 공간을 스캔해 **에덴 상태(생명 가능 basin)** 의 조건을 찾아낸다.
 
 **지구의 과거(대홍수 이전)** 뿐 아니라
-**외계 행성(Exoplanet)** 의 거주 가능성 탐색에도 즉시 투입 가능한 완전 독립 엔진.
+**외계 행성(Exoplanet)** 의 거주 가능성 스크리닝에도 즉시 사용 가능한 완전 독립 엔진.
 
 ---
 
@@ -45,12 +53,19 @@
 
 ```
 cherubim/
+│
+│  ── Core (6) ──────────────────────────────────────────────────
 ├── initial_conditions.py  — 6개 파라미터 → 전 지구 동역학 상태 자동 생성
-├── firmament.py           — 궁창(수증기 캐노피) 물리 모델 + 대홍수 발동
-├── flood.py               — 대홍수 4단계 전이 곡선 (rising → peak → receding → stabilizing)
+├── firmament.py           — 궁창(수증기 캐노피) 경계 조건 모델 + 대홍수 발동
+├── flood.py               — 대홍수 상태 전이 (rising → peak → receding → stabilizing)
 ├── geography.py           — 자기장 좌표계 + 시대별 지형 + 위도별 방사선 보호
-├── search.py              — EdenSearchEngine ← Eden Basin Finder 핵심
+├── search.py              — EdenSearchEngine  ← Eden Basin Finder 핵심
 └── biology.py             — 물리 환경 → 수명 / 체형 / 생태계 안정성
+│
+│  ── Extended (3, v1.1.0) ──────────────────────────────────────
+├── spatial_grid.py        — 행성 표면 위도×경도 2D 공간 탐사 (히트맵)
+├── basin_stability.py     — Ring Attractor 기반 Basin 안정성 검증
+└── param_space.py         — 2D~7D 다차원 파라미터 공간 탐사 (GridND)
 ```
 
 ### 물리 → 생물 인과관계
@@ -64,11 +79,15 @@ GPP        ──→ 먹이 풍요도    ──→ 체형 상한
 
 ---
 
-## 탐색 결과 (지구 antediluvian 기준)
+## 데모 프리셋 예시 결과
 
-| 항목 | 에덴 (대홍수 이전) | 현재 지구 |
-|------|:-----------------:|:---------:|
-| **Eden Score** | **1.000** | 0.000 |
+> **주의**: 아래 수치는 기본 프리셋(antediluvian 파라미터 세트) 기준
+> `python examples/cherubim_demo.py` 실행 시 재현 가능한 모델 출력 예시입니다.
+> Eden Score는 설정된 EdenCriteria 기준 대비 상대값입니다.
+
+| 항목 | 에덴 프리셋 (antediluvian) | 현재 지구 프리셋 (postdiluvian) |
+|------|:-------------------------:|:-------------------------------:|
+| **Eden Score** | **1.000** | 0.000 ¹ |
 | CO2 | 200~300 ppm | 280 ppm |
 | 온도 | 29~35 °C (전 지구 균온) | 14 °C |
 | 빙하 밴드 | **0 / 12** | 4 / 12 |
@@ -78,8 +97,11 @@ GPP        ──→ 먹이 풍요도    ──→ 체형 상한
 | 안정 생태계 | ✅ | ❌ |
 | mutation 배수 | **0.03×** | 1.0× |
 
-> 수명 물리 상한 = **600 yr** (UV + 대사 + 게놈 복합 효과)
-> 서사 레이어 (900년) = 물리 상한 초과 → 코드 밖 영역
+> ¹ 현재 지구 프리셋은 기본 EdenCriteria (빙하 밴드 ≤ 0, mutation ≤ 0.10, 거주 밴드 ≥ 10)를 충족하지 못해 FAIL 판정.
+> 기준값(threshold)을 조정하면 부분 통과 가능.
+
+> 수명 물리 상한 = **600 yr** (UV + 대사 + 게놈 복합 모델)
+> 서사 레이어(900년 기록)는 물리 상한 초과 → 코드 외부 영역
 
 ---
 
@@ -92,8 +114,11 @@ cd Cherubim_Engine
 # 의존성: 표준 라이브러리 + numpy
 pip install numpy
 
-# 전체 데모 실행 (5단계)
+# 기본 데모 (6단계 코어)
 python examples/cherubim_demo.py
+
+# 확장 모듈 통합 데모 (v1.1.0, 5단계)
+python examples/cherubim_extended_demo.py
 ```
 
 ---
@@ -110,6 +135,47 @@ result = engine.search(make_antediluvian_space())
 
 print(f"최고 점수: {result.best.score:.3f}")
 print(result.best.summary())
+```
+
+### 행성 표면 2D 히트맵 (v1.1.0)
+
+```python
+from cherubim import EdenSpatialGrid, make_antediluvian
+
+grid = EdenSpatialGrid(lat_steps=12, lon_steps=24)
+heatmap = grid.scan(make_antediluvian())
+heatmap.print_ascii()
+
+zones = heatmap.eden_zones(threshold=0.55)
+for z in zones[:3]:
+    print(z)
+```
+
+### Basin 안정성 검증 (v1.1.0)
+
+```python
+from cherubim import EdenBasinStability
+
+bst = EdenBasinStability()          # Ring Attractor 자동 연결 (없으면 Lyapunov 대체)
+results = bst.test_batch(candidates[:5])
+bst.print_ranking(results)
+```
+
+### 다차원 파라미터 공간 탐사 (v1.1.0)
+
+```python
+from cherubim import EdenParamScanner, CO2_AXIS, TEMP_AXIS, O2_AXIS
+
+scanner = EdenParamScanner()
+
+# 2D 기후 상태도
+result2d = scanner.scan_2d(CO2_AXIS, TEMP_AXIS)
+result2d.print_heatmap()
+
+# 3D Basin 탐색
+result3d = scanner.scan_nd([CO2_AXIS, O2_AXIS, TEMP_AXIS])
+shape = scanner.analyze_basin_shape(result3d)
+print(shape.summary())
 ```
 
 ### 외계 행성 거주 가능성 탐색
@@ -130,20 +196,6 @@ print(result.best.summary())
 from cherubim import compare_biology, make_antediluvian, make_postdiluvian
 
 print(compare_biology(make_antediluvian(), make_postdiluvian()))
-```
-
-### 에덴 환경 시뮬레이션 (궁창 → 대홍수 → 이후)
-
-```python
-from cherubim import make_firmament, make_flood_engine
-
-fl = make_firmament(phase='antediluvian')
-print(f"T = {fl.T_surface_estimate():.1f} K  UV차폐 = {fl.uv_shield_factor:.2f}")
-
-flood = make_flood_engine()
-for _ in range(12):
-    snap = flood.step(dt_yr=1.0)
-    print(f"{snap.flood_phase:14s}  T={snap.T_surface_K:.1f}K  f_land={snap.f_land:.2f}")
 ```
 
 ---
@@ -167,10 +219,21 @@ EdenCriteria(
     GPP_min      = 3.0,    # 최소 1차 생산성 [kg C/m²/yr]
     stress_max   = 0.05,   # 최대 스트레스 지수
     ice_bands_max= 0,      # 최대 빙하 밴드 수
-    mutation_max = 0.10,   # 최대 mutation 배수
-    hab_bands_min= 10,     # 최소 거주 가능 밴드 수
+    mutation_max = 0.10,   # 최대 mutation 배수 (1.0 = 현재 지구 기준)
+    hab_bands_min= 10,     # 최소 거주 가능 밴드 수 (전체 12개 중)
 )
 ```
+
+모든 기준값은 `EdenCriteria` 파라미터로 주입 가능. 모델 상수는 각 모듈 내 `_constants` 블록으로 분리.
+
+---
+
+## 아키텍처 원칙
+
+1. **시나리오 값은 파라미터로 주입** — 시나리오 수치는 `SearchSpace` / `EdenCriteria`로 외부 주입, 모델 상수는 각 모듈 내 계수로 분리
+2. **완전 독립** — 표준 라이브러리 + numpy만으로 동작, 외부 엔진 의존 없음 (Ring Attractor / Grid Engine은 선택적 연동)
+3. **행성 중립** — 지구 전용이 아닌 임의 행성 파라미터 투입 가능
+4. **에덴 = state basin** — 특정 좌표가 아닌 파라미터 공간의 안정 평형 영역
 
 ---
 
@@ -189,15 +252,6 @@ EdenCriteria(
 
 ---
 
-## 아키텍처 원칙
-
-1. **하드코딩 없음** — 모든 수치는 물리 파라미터에서 동역학으로 계산
-2. **완전 독립** — 표준 라이브러리 + numpy만으로 동작, 외부 의존 없음
-3. **행성 중립** — 지구 전용이 아닌 임의 행성 파라미터 투입 가능
-4. **에덴 = state basin** — 특정 좌표가 아닌 파라미터 공간의 안정 평형 영역
-
----
-
 ## 관련 프로젝트
 
 | 레포 | 역할 |
@@ -207,5 +261,5 @@ EdenCriteria(
 
 ---
 
-*v1.0.0 · PHAM Signed · GNJz (Qquarts)*
+*v1.1.0 · PHAM Signed · GNJz (Qquarts)*
 *"Cherubim — 에덴의 입구를 스캔하는 엔진"*
