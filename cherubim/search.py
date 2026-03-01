@@ -209,7 +209,11 @@ def make_exoplanet_space(
     stellar_flux_scale: float = 1.0,
     CO2_range: Tuple = (100.0, 1000.0, 6),
 ) -> SearchSpace:
-    """외계 행성 탐색 공간 — 항성 에너지 스케일 조정 가능."""
+    """외계 행성 탐색 공간 — 항성 에너지 스케일 조정 가능.
+
+    현재 지구(1.0 atm, rain) 기반 탐색.
+    궁창시대 기준 탐색은 make_antediluvian_exoplanet_space() 사용.
+    """
     return SearchSpace(
         CO2_range        = CO2_range,
         H2O_atm_range    = (0.005, 0.10, 5),
@@ -221,6 +225,74 @@ def make_exoplanet_space(
         CH4_fixed        = 1.0,
         pressure_fixed   = stellar_flux_scale,
         precip_mode      = 'rain',
+    )
+
+
+def make_antediluvian_exoplanet_space(
+    CO2_range: Tuple = (150.0, 600.0, 6),
+) -> SearchSpace:
+    """궁창시대 기준 외계행성 탐색 공간.
+
+    핵심 철학
+    ──────────────────────────────────────────────
+    "현재 지구 환경이 아니라 에덴(궁창시대) 환경을
+     기준점으로 외계 생명체 거주 가능성을 탐색한다."
+
+    현재 지구 기준(make_exoplanet_space)과의 차이
+    ─────────────────────────────────────────────────────────
+      파라미터         현재지구 기준    궁창시대 기준    비고
+      ─────────────────────────────────────────────────────
+      pressure_atm     1.0 고정        1.10~1.40       +25% 중심
+      precip_mode      rain 고정        mist            수증기 궁창
+      H2O_atm_range    0.5%~10%        3%~8%           6% 중심 (포화도 높음)
+      H2O_canopy_range 0%~5%           2%~7%           궁창 수막 포함
+      UV_shield_range  0%~95%          75%~99%         오존층 강화 (95% 중심)
+      O2_range         10%~30%         20%~27%         24% 중심
+      albedo_range     10%~50%         12%~28%         낮은 알베도 (얼음 없음)
+      f_land_range     20%~60%         30%~50%         균형 육지 비율
+
+    PHYSICAL_FACT
+    ──────────────────────────────────────────────
+      - 1.25 atm 고압: 산소 분압 높음 → 생명체 에너지 효율 증가
+      - mist(수증기 궁창): 전 지구 균일 강수 → 사막 없음
+      - UV shield 95%: 돌연변이율 0.06x → DNA 안정
+      - pole_eq_delta_K 15K: 극지-적도 온도차 최소 → 전 지구 거주 가능
+
+    Parameters
+    ----------
+    CO2_range : Tuple[float, float, int]
+        (min, max, steps). 기본값 150~600 ppm, 6단계.
+        궁창시대 추정값 ~200~280 ppm 포함.
+
+    Returns
+    -------
+    SearchSpace  —  EdenSearchEngine(phase='exoplanet').search(space=...) 에 직접 주입 가능.
+
+    Examples
+    --------
+    >>> from cherubim.search import make_antediluvian_exoplanet_space, make_eden_search
+    >>> space  = make_antediluvian_exoplanet_space()
+    >>> engine = make_eden_search(phase='exoplanet')
+    >>> result = engine.search(space=space, min_score=0.55)
+    >>> result.summary()
+    """
+    return SearchSpace(
+        CO2_range        = CO2_range,
+        # ── 대기 수분 — 궁창시대 포화 대기 (H2O ~6%) ─────────────────────────
+        H2O_atm_range    = (0.03,  0.08,  4),   # 3%~8%  (현재지구 ~1%)
+        H2O_canopy_range = (0.02,  0.07,  4),   # 궁창 수막 2%~7%
+        # ── 산소 — 24% 중심으로 탐색 ─────────────────────────────────────────
+        O2_range         = (0.20,  0.27,  4),   # 20%~27%
+        # ── 알베도 — 얼음 없는 행성 (낮은 알베도) ────────────────────────────
+        albedo_range     = (0.12,  0.28,  4),   # 12%~28%
+        # ── 육지 비율 — 균형 (에덴 ~38%) ─────────────────────────────────────
+        f_land_range     = (0.30,  0.50,  4),   # 30%~50%
+        # ── UV 차폐 — 95% 오존층 수준 (높은 UV 차폐 탐색) ────────────────────
+        UV_shield_range  = (0.75,  0.99,  4),   # 75%~99%
+        # ── 고정값 — 궁창시대 핵심 파라미터 ─────────────────────────────────
+        CH4_fixed        = 0.5,                 # 낮은 CH4 (에덴 청정 대기)
+        pressure_fixed   = 1.25,                # 1.25 atm (궁창시대 기준점)
+        precip_mode      = 'mist',              # 수증기 궁창 강수 모드
     )
 
 
@@ -525,6 +597,8 @@ class EdenSearchEngine:
                 space = make_antediluvian_space()
             elif self.phase == 'postdiluvian':
                 space = make_postdiluvian_space()
+            elif self.phase == 'antediluvian_exoplanet':
+                space = make_antediluvian_exoplanet_space()
             else:
                 space = make_exoplanet_space()
 
@@ -756,12 +830,24 @@ def make_eden_search(
     Parameters
     ----------
     phase : str
-        'antediluvian' | 'postdiluvian' | 'exoplanet'
+        'antediluvian'           — 궁창시대 에덴 탐색 (기본)
+        'postdiluvian'           — 대홍수 이후 현재 지구 근방
+        'exoplanet'              — 현재 지구 기준 외계행성 탐색
+        'antediluvian_exoplanet' — 궁창시대 기준 외계행성 탐색 ★
     strict : bool
         True → 엄격한 기준 (빙하=0, mutation<0.05, GPP>4.0)
         False → 관대한 기준 (탐색 범위 넓음)
     verbose : bool
         진행 상황 출력.
+
+    Notes
+    -----
+    'antediluvian_exoplanet':
+        현재 지구(1.0 atm, rain, H2O 1%)가 아닌
+        궁창시대(1.25 atm, mist, H2O 6%, UV 95%) 환경을
+        기준으로 외계 생명체 거주 가능 행성을 탐색한다.
+        이 모드에서는 탐색 공간이 자동으로
+        make_antediluvian_exoplanet_space() 로 설정된다.
     """
     if strict:
         criteria = EdenCriteria(
@@ -784,7 +870,8 @@ def make_eden_search(
             hab_bands_min = 10,
         )
 
-    geo = make_eden_geography() if phase == 'antediluvian' else None
+    # antediluvian / antediluvian_exoplanet → 자기장 보호 포함한 지리 컨텍스트 사용
+    geo = make_eden_geography() if phase in ('antediluvian', 'antediluvian_exoplanet') else None
 
     return EdenSearchEngine(
         criteria = criteria,
@@ -806,4 +893,5 @@ __all__ = [
     'make_antediluvian_space',
     'make_postdiluvian_space',
     'make_exoplanet_space',
+    'make_antediluvian_exoplanet_space',
 ]

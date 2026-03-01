@@ -120,6 +120,29 @@ from .eden_os_runner import (
     make_eden_os_runner,
 )
 
+# ── LAYER 4.5a  genesis_log — 탄생 순간 불변 로그 ────────────────────────────
+from .genesis_log import (
+    GenesisEvent,
+    GenesisLog,
+    record_genesis,
+    make_genesis_log,
+    GENESIS_EDEN_INDEX_MIN,
+    GENESIS_STATUS_OK,
+    GENESIS_STATUS_DEGRADED,
+    GENESIS_STATUS_INVALID,
+)
+
+# ── LAYER 4.5b  observer_mode — 독립 관찰자 (상대성) ─────────────────────────
+from .observer_mode import (
+    ObservationFrame,
+    InternalObserver,
+    ExternalObserver,
+    RelativeEvent,
+    RelativeObserver,
+    make_observer,
+    OBSERVER_CONFIG,
+)
+
 __all__ = [
     # LAYER 0 — 환경
     "EdenWorldEnv", "BandInfo", "make_eden_world",
@@ -144,4 +167,12 @@ __all__ = [
     "GENERATION_NAMES_LORE", "make_lineage",
     # LAYER 6 — 실행기
     "TickLog", "EdenOSRunner", "make_eden_os_runner",
+    # LAYER 4.5a — 탄생 순간 로그
+    "GenesisEvent", "GenesisLog", "record_genesis", "make_genesis_log",
+    "GENESIS_EDEN_INDEX_MIN", "GENESIS_STATUS_OK",
+    "GENESIS_STATUS_DEGRADED", "GENESIS_STATUS_INVALID",
+    # LAYER 4.5b — 독립 관찰자 (상대성)
+    "ObservationFrame", "InternalObserver",
+    "ExternalObserver", "RelativeEvent", "RelativeObserver",
+    "make_observer", "OBSERVER_CONFIG",
 ]

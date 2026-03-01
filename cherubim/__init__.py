@@ -83,10 +83,20 @@ Basin 안정성 검증 (신규):
     result2d = scanner.scan_2d(CO2_AXIS, TEMP_AXIS)
     result2d.print_heatmap()
 
-외계 행성 탐색:
+외계 행성 탐색 — 현재 지구 기준:
     from cherubim import EdenSearchEngine, make_exoplanet_space
     result = EdenSearchEngine().search(make_exoplanet_space(stellar_flux_scale=0.85))
     print(result.best.summary())
+
+외계 행성 탐색 — 궁창시대 기준 ★ (v2.0.0 신규):
+    from cherubim import make_eden_search, make_antediluvian_exoplanet_space
+    engine = make_eden_search(phase='antediluvian_exoplanet')
+    result = engine.search(make_antediluvian_exoplanet_space(), min_score=0.55)
+    print(result.best.summary())
+
+    # 핵심 차이:
+    #   make_exoplanet_space()              → 1.0 atm, rain, H2O 0.5~10%  (현재 지구 기준)
+    #   make_antediluvian_exoplanet_space() → 1.25 atm, mist, H2O 3~8%   (궁창시대 기준)
 """
 
 from .initial_conditions import (
@@ -127,6 +137,7 @@ from .search import (
     make_antediluvian_space,
     make_postdiluvian_space,
     make_exoplanet_space,
+    make_antediluvian_exoplanet_space,
 )
 from .biology import (
     BiologyFactors,
@@ -237,7 +248,8 @@ __all__ = [
     # search  ← Eden Basin Finder 핵심
     "EdenCriteria", "EdenCandidate", "SearchSpace", "SearchResult",
     "EdenSearchEngine", "compute_eden_score", "make_eden_search",
-    "make_antediluvian_space", "make_postdiluvian_space", "make_exoplanet_space",
+    "make_antediluvian_space", "make_postdiluvian_space",
+    "make_exoplanet_space", "make_antediluvian_exoplanet_space",
     # biology
     "BiologyFactors", "EdenBiologyState",
     "compute_biology", "compare_biology", "make_biology",
