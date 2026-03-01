@@ -385,8 +385,81 @@ EdenCriteria(
 | `coordinate_inverter.py` | A_HIGH | 1.0000 | v1.3 |
 | `calendar.py` | A_HIGH | 1.0000 | v1.3 |
 | `biology_baseline.py` | A_HIGH | 1.0000 | v1.3 |
+| `eden_os/eden_world.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/rivers.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/tree_of_life.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/cherubim_guard.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/adam.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/eve.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/lineage.py` | A_HIGH | 1.0000 | v2.0 |
+| `eden_os/eden_os_runner.py` | A_HIGH | 1.0000 | v2.0 |
 
 서명 파일: `blockchain/pham_chain_*.json`
+
+---
+
+## EdenOS v2.0 — 행성 운영 체제 시뮬레이터
+
+```
+cherubim/eden_os/
+│
+│  ── LAYER 0  환경 ────────────────────────────────────────
+├── eden_world.py        궁창시대 스냅샷 (읽기전용 SingleSource)
+│                        ice_bands=0 / hab_bands=12 / eden_index=0.904
+│
+│  ── LAYER 1  인프라 ───────────────────────────────────────
+├── rivers.py            4대강 방향 그래프
+│                        비손·기혼·힛데겔·유브라데 (극점→방사형 분기)
+│
+│  ── LAYER 2  커널 ────────────────────────────────────────
+├── tree_of_life.py      생명나무 상태머신 (available→accessed→locked)
+│                        선악과 (intact→consumed, 비가역)
+│
+│  ── LAYER 3  보안 ────────────────────────────────────────
+├── cherubim_guard.py    체루빔 접근 제어 (CONFIG 룰셋 기반)
+│                        GuardDecision(allow/deny/scan/alert)
+│
+│  ── LAYER 4  에이전트 ─────────────────────────────────────
+├── adam.py              시스템 관리자 v1 (observe→decide→act)
+├── eve.py               보조 프로세서 + 계승 트리거
+│
+│  ── LAYER 5  계승 ────────────────────────────────────────
+├── lineage.py           관리자 계승 그래프 (아담→셋→…→네오)
+│
+│  ── LAYER 6  실행기 ───────────────────────────────────────
+└── eden_os_runner.py    7단계 EdenOSRunner
+                         env→rivers→tree→guard→agents→lineage→log
+```
+
+### EdenOS 원라이너
+
+```python
+from cherubim.eden_os import make_eden_os_runner
+
+runner = make_eden_os_runner()
+runner.run(steps=24)
+runner.print_report()
+# → 24틱 연속 실행 | 성공률 100% | 생명나무 유지 | 4강 안정 공급
+```
+
+### 계승 시나리오 (선악과 섭취 → 아담 추방 → 셋 계승)
+
+```python
+from cherubim.eden_os import make_adam, make_eve, make_lineage
+from cherubim.eden_os import make_trees, make_cherubim_guard, make_eden_world
+
+world = make_eden_world()
+life, know = make_trees(world)
+guard = make_cherubim_guard(world)
+adam  = make_adam()
+eve   = make_eve(adam)
+graph = make_lineage()
+graph.add_generation("adam", adam._policy, born_tick=0)
+
+# 선악과 섭취 시뮬레이션
+adam.act(adam.decide(adam.observe(world, life)), guard, life, know)
+# → 체루빔: ALERT | 생명나무: LOCKED | 계승 발동 → 셋(Gen2) 생성
+```
 
 ---
 
@@ -395,9 +468,9 @@ EdenCriteria(
 | 레포 | 역할 |
 |------|------|
 | [cookiie_brain](https://github.com/qquartsco-svg/cookiie_brain) | 전체 창세기 물리 시스템 (Day1~7 + Eden) |
-| **Cherubim_Engine** | Eden Basin Finder 독립 추출 버전 |
+| **Cherubim_Engine** | Eden Basin Finder + EdenOS 독립 추출 버전 |
 
 ---
 
-*v1.3.0 · PHAM Signed · GNJz (Qquarts)*
-*"Cherubim — 에덴의 입구를 스캔하는 엔진"*
+*v2.0.0 · PHAM Signed · GNJz (Qquarts)*
+*"Cherubim — 에덴의 입구를 스캔하고, 그 안을 운영한다"*

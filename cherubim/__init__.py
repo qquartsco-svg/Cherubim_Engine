@@ -1,4 +1,4 @@
-"""Cherubim — Eden Basin Finder  v1.3.0
+"""Cherubim — Eden Basin Finder  v2.0.0
 
 "에덴은 좌표가 아니라 파라미터 상태(state basin)이다."
 
@@ -26,7 +26,29 @@
                           FirmamentDecayEngine (integrity 1.0→0.0 전이)
                           ExtinctionMapper (지질 이벤트 × 궁창 상태 비교)
 
-확장 모듈 (v1.3.0 신규 — "우리가 잘못 알고 있는 것" 시뮬레이터):
+확장 모듈 (v1.3.0 — "우리가 잘못 알고 있는 것" 시뮬레이터):
+  coordinate_inverter.py — 좌표계 역전 시뮬레이터
+  calendar.py            — 시스템 시간 재계산 (세차 위상 · 40년 전환 마커)
+  biology_baseline.py    — 생물 기준점 재설정 (에덴 vs 현재)
+
+EdenOS 모듈 (v2.0.0 신규 — 행성 운영 체제 시뮬레이터):
+  eden_os/                — 7레이어 EdenOS 서브패키지
+    eden_world.py         — [L0] 궁창시대 환경 스냅샷 (읽기전용)
+    rivers.py             — [L1] 4대강 방향 그래프 (비손·기혼·힛데겔·유브라데)
+    tree_of_life.py       — [L2] 생명나무 + 선악과 상태 머신
+    cherubim_guard.py     — [L3] 체루빔 접근 제어 (CONFIG 기반 룰셋)
+    adam.py               — [L4] 시스템 관리자 v1 에이전트 루프
+    eve.py                — [L4] 보조 프로세서 + 계승 트리거
+    lineage.py            — [L5] 관리자 계승 그래프 (아담→네오)
+    eden_os_runner.py     — [L6] 7단계 EdenOS 통합 실행기
+
+  빠른 시작:
+    from cherubim.eden_os import make_eden_os_runner
+    runner = make_eden_os_runner()
+    runner.run(steps=24)
+    runner.print_report()
+
+확장 모듈 (v1.3.0 — "우리가 잘못 알고 있는 것" 시뮬레이터):
   coordinate_inverter.py — 좌표계 역전 시뮬레이터
                            현재(북=위) vs 에덴 기준(남=위) 에덴 히트맵 비교
                            자기장 방향 분석 + 단테 연옥산 위치 검증
@@ -196,7 +218,7 @@ from .biology_baseline import (
     quick_biology_report,
 )
 
-__version__ = "1.3.0"
+__version__ = "2.0.0"
 __author__  = "GNJz (Qquarts)"
 __project__ = "Cherubim — Eden Basin Finder"
 
