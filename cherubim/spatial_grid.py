@@ -37,13 +37,17 @@ _DEFAULT_LON_STEPS = 24   # 서→동 (−180 ~ +180), 기본 24단계
 
 # ── 셀 단위 로컬 수정자 ──────────────────────────────────────────────────────────
 
-def _lat_temperature_bias(lat_deg: float) -> float:
+def _lat_temperature_bias(lat_deg: float, precip_mode: str = 'rain') -> float:
     """위도에 따른 온도 편차 [°C 상대].
 
-    적도(0°) → 0, 극(±90°) → −40°C 상대 차이.
-    코사인 감쇄로 실제 위도-온도 관계 모사.
+    현재(rain 모드): 적도(0°) → 0, 극(±90°) → −40°C.
+    에덴/궁창(mist 모드): 수증기 캐노피 온실 효과 → 극지 편차 −15°C로 감소.
+      - 궁창이 전 지구 균온을 유지 → 자전축 기울기 거의 0° 상태
+      - 태양 입사각 편차를 수증기 캐노피가 흡수·재복사해 평탄화
+      - 지질 기록(적도~극지 균등 화석): 극지 온도차 약 15°C 이내 추정
     """
-    return -40.0 * (1.0 - math.cos(math.radians(lat_deg)))
+    max_bias = -15.0 if precip_mode == 'mist' else -40.0
+    return max_bias * (1.0 - math.cos(math.radians(lat_deg)))
 
 
 def _lon_continental_bias(lon_deg: float, f_land: float) -> float:
@@ -107,7 +111,7 @@ def compute_cell_eden_score(
     base_T_C = ic.T_surface_K - 273.15
     local_T_C = (
         base_T_C
-        + _lat_temperature_bias(lat_deg)
+        + _lat_temperature_bias(lat_deg, ic.precip_mode)   # 궁창 모드 반영
         + _lon_continental_bias(lon_deg, ic.f_land)
     )
 
@@ -125,6 +129,10 @@ def compute_cell_eden_score(
     # 경도 편차: 대륙 내부는 건조 → GPP 10~20% 감소
     lon_factor = 1.0 - 0.15 * abs(math.sin(math.radians(lon_deg)))
     gpp_local = gpp_band * lon_factor
+    # 궁창(mist) 모드: 극지도 안개 수분 공급 → GPP 하한 보정
+    if ic.precip_mode == 'mist' and abs(lat_deg) > 60:
+        # 에덴 시대 극지: 균온 + 안개 → 현재 아열대 수준 GPP 보장
+        gpp_local = max(gpp_local, 0.35)
     gpp_score = min(1.0, gpp_local / 0.8)
 
     # ── 자기장 보호 ────────────────────────────────────────────────────────────
@@ -144,7 +152,8 @@ def compute_cell_eden_score(
     )
 
     # 빙하 패널티: 극지방 (|lat| > 67.5°) 빙하 여부
-    if abs(lat_deg) > 67.5:
+    # 궁창(mist) 모드: 빙하 없음 (균온) → 패널티 면제
+    if abs(lat_deg) > 67.5 and ic.precip_mode != 'mist':
         ice_band = b.ice_mask[0 if lat_deg < 0 else 11]
         if ice_band:
             score *= 0.1  # 빙하 지역은 에덴 불가
