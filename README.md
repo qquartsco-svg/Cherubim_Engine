@@ -64,8 +64,14 @@ cherubim/
 │
 │  ── Extended (3, v1.1.0) ──────────────────────────────────────
 ├── spatial_grid.py        — 행성 표면 위도×경도 2D 공간 탐사 (히트맵)
+│                            ※ 궁창(mist) 모드 극지 균온 보정 포함
 ├── basin_stability.py     — Ring Attractor 기반 Basin 안정성 검증
 └── param_space.py         — 2D~7D 다차원 파라미터 공간 탐사 (GridND)
+│
+│  ── Extended (1, v1.2.0) ──────────────────────────────────────
+└── extinction.py          — 궁창 붕괴 전이 곡선 + 지질 대멸종 기능 매핑
+                             FirmamentDecayEngine: integrity 1.0→0.0 전이
+                             ExtinctionMapper: 지질 이벤트 × 궁창 상태 비교
 ```
 
 ### 물리 → 생물 인과관계
@@ -191,6 +197,45 @@ shape = scanner.analyze_basin_shape(result3d)
 print(shape.summary())
 ```
 
+### 궁창 붕괴 전이 곡선 + 대멸종 매핑 (v1.2.0)
+
+```python
+from cherubim import FirmamentDecayEngine, make_extinction_mapper
+
+# 궁창 완전도(1.0→0.0) 전이 테이블 출력
+engine = FirmamentDecayEngine('physical')
+engine.print_transition_table(steps=10)
+
+# 지질 대멸종 × 궁창 상태 타임라인 매핑
+mapper = make_extinction_mapper()
+mapper.print_timeline()
+mapper.print_eden_curve()
+```
+
+**출력 예시:**
+
+```
+FI=1.00  캄브리아 대폭발  UV=0.950  돌연변이=0.010x  에덴지수=0.980
+FI=0.75  오르도비스기 멸종 UV=0.712  돌연변이=0.032x  85% 종 소멸
+FI=0.30  페름기 대멸종    UV=0.285  돌연변이=0.251x  96% 종 소멸
+FI=0.05  K-Pg 충돌        UV=0.048  돌연변이=0.794x  에덴지수=0.143
+FI=0.00  현재 빙하기      UV=0.000  돌연변이=1.000x  에덴지수=0.042
+```
+
+> **결론**: FI(궁창 완전도)가 0.30 이하로 떨어질 때마다 대멸종이 발생한다.
+> 궁창은 UV 차단 + 균온 + 돌연변이 억제의 통합 보호막이었다.
+
+```python
+# FloodEngine에 홍수 직전 궁창 상태 지정
+from cherubim import make_flood_engine
+
+fe = make_flood_engine(firmament_integrity=1.0)   # 창세기 시나리오
+fe = make_flood_engine(firmament_integrity=0.30)  # 페름기 시나리오
+fe = make_flood_engine(firmament_integrity=0.05)  # K-Pg 시나리오
+```
+
+---
+
 ### 외계 행성 거주 가능성 탐색
 
 ```python
@@ -263,6 +308,7 @@ EdenCriteria(
 | `spatial_grid.py` | A_HIGH | 1.0000 | v1.1 |
 | `basin_stability.py` | A_HIGH | 1.0000 | v1.1 |
 | `param_space.py` | A_HIGH | 1.0000 | v1.1 |
+| `extinction.py` | A_HIGH | 1.0000 | v1.2 |
 
 서명 파일: `blockchain/pham_chain_*.json`
 
@@ -277,5 +323,5 @@ EdenCriteria(
 
 ---
 
-*v1.1.0 · PHAM Signed · GNJz (Qquarts)*
+*v1.2.0 · PHAM Signed · GNJz (Qquarts)*
 *"Cherubim — 에덴의 입구를 스캔하는 엔진"*

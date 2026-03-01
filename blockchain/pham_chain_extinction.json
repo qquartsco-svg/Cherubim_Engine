@@ -1,0 +1,12 @@
+{
+  "file": "cherubim/extinction.py",
+  "grade": "A_HIGH",
+  "note": "FirmamentDecayEngine + ExtinctionMapper — 궁창 붕괴 전이 곡선 + 대멸종 기능 매핑",
+  "prev_hash": "5b6b023da2ed9e0d40e238dd8588e95c8724aeadfbca3ccc7020c4561a25a909",
+  "score": 1.0,
+  "sha256": "7ccb739bb696f4a586afa2a6e6bdad96d6628956e0c9ed8c62a2bb69f55c5581",
+  "signer": "GNJz (Qquarts)",
+  "timestamp": "2026-03-01T05:00:55.900106Z",
+  "version": "v1.2",
+  "hash": "81517ae0708b52444fbdab379f73609da2d535e658a970e496d73e90f2c169ff"
+}
