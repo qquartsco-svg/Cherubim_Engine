@@ -151,14 +151,27 @@ for z in zones[:3]:
     print(z)
 ```
 
+### 행성 표면 빠른 스캔 — 원라이너 (v1.1.0)
+
+```python
+from cherubim import quick_surface_scan, make_antediluvian
+
+# 한 줄로 스캔 + ASCII 히트맵 출력 + Eden Zone 목록 반환
+heatmap = quick_surface_scan(make_antediluvian(), threshold=0.55)
+# → ★ Eden Zone 12개 발견 (52°N·S, 37°N·S 온대 중심)
+```
+
 ### Basin 안정성 검증 (v1.1.0)
 
 ```python
-from cherubim import EdenBasinStability
+from cherubim import EdenBasinStability, make_antediluvian, EdenSearchEngine
 
-bst = EdenBasinStability()          # Ring Attractor 자동 연결 (없으면 Lyapunov 대체)
-results = bst.test_batch(candidates[:5])
-bst.print_ranking(results)
+# 탐색 → 상위 후보 Basin 안정성 검증
+result = EdenSearchEngine().search()
+bst    = EdenBasinStability()   # Ring Attractor 자동 연결 (없으면 Lyapunov 수학 대체)
+ranks  = bst.test_batch(result.candidates[:5])
+bst.print_ranking(ranks)
+# → 🌟 S등급  Basin depth=0.993  복귀율=100%  (완벽한 안정 어트랙터)
 ```
 
 ### 다차원 파라미터 공간 탐사 (v1.1.0)
@@ -239,14 +252,17 @@ EdenCriteria(
 
 ## 블록체인 서명 (PHAM)
 
-| 파일 | 등급 | 점수 |
-|------|:----:|:----:|
-| `initial_conditions.py` | A_HIGH | 1.0000 |
-| `search.py` | A_HIGH | 1.0000 |
-| `biology.py` | A_HIGH | 1.0000 |
-| `geography.py` | A_HIGH | 1.0000 |
-| `firmament.py` | A_HIGH | 1.0000 |
-| `flood.py` | A_HIGH | 1.0000 |
+| 파일 | 등급 | 점수 | 버전 |
+|------|:----:|:----:|:----:|
+| `initial_conditions.py` | A_HIGH | 1.0000 | v1.0 |
+| `search.py` | A_HIGH | 1.0000 | v1.0 |
+| `biology.py` | A_HIGH | 1.0000 | v1.0 |
+| `geography.py` | A_HIGH | 1.0000 | v1.0 |
+| `firmament.py` | A_HIGH | 1.0000 | v1.0 |
+| `flood.py` | A_HIGH | 1.0000 | v1.0 |
+| `spatial_grid.py` | A_HIGH | 1.0000 | v1.1 |
+| `basin_stability.py` | A_HIGH | 1.0000 | v1.1 |
+| `param_space.py` | A_HIGH | 1.0000 | v1.1 |
 
 서명 파일: `blockchain/pham_chain_*.json`
 

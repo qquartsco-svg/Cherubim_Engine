@@ -1,0 +1,33 @@
+[
+  {
+    "index": 0,
+    "timestamp": 1772327423.508885,
+    "data": {
+      "name": "GENESIS"
+    },
+    "hash": "0"
+  },
+  {
+    "index": 1,
+    "timestamp": 1772327423.508885,
+    "data": {
+      "title": "basin_stability.py",
+      "author": "GNJz",
+      "timestamp": "2026-03-01 12:10:23",
+      "hash": "3061c5e4019830b9bb09a4f87dd1a562cac4dfff538aa26092324785ada5797c",
+      "cid": "CID-unavailable",
+      "description": "Ring Attractor 기반 Eden Basin 안정성 검증 — Lyapunov + 뉴런 시뮬레이션",
+      "score": 1.0,
+      "label": "A_HIGH",
+      "signals": {
+        "byte": 1.0,
+        "text": 1.0,
+        "ast": 1.0,
+        "exec": 1.0
+      },
+      "exec_output": "ALL PASS"
+    },
+    "hash": "6f1e4c7ff28a4aa2a01d3ef21bb6b2998bdf98f18e31a3f116aa70d8e7e02897",
+    "prev_hash": "4fcb0ccabc4b02a70a324c0743b7562810cd95d6adcaa275be483706ee4b6cb7"
+  }
+]
