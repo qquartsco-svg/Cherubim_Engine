@@ -1,0 +1,12 @@
+{
+  "file": "cherubim/biology_baseline.py",
+  "grade": "A_HIGH",
+  "note": "BiologyBaseline — 에덴(FI=1.0) vs 현재(FI=0.0) 수명/신장/돌연변이 비교 + 창세기 검증",
+  "prev_hash": "43f32e5c343ac5feb0387fb3e8411d8e69227d8fd68b66b1a267aa4afe6cc637",
+  "score": 1.0,
+  "sha256": "7965c749d9b579d4c6f92c70d5f52b79e37eefd6fada1ac27267c5d6fba3bea5",
+  "signer": "GNJz (Qquarts)",
+  "timestamp": "2026-03-01T10:04:40.587327Z",
+  "version": "v1.3",
+  "hash": "8dd124d79e800887e119e133253e7940c0f822f6679947563a6479bbc2c8a0d5"
+}

@@ -1,0 +1,12 @@
+{
+  "file": "cherubim/calendar.py",
+  "grade": "A_HIGH",
+  "note": "SystemClock — 세 가지 시계(AD달력/대홍수기점/세차위상) + TRANSITION_UNIT=40",
+  "prev_hash": "a9fea367ff4cce53b2bcc2f87586a73932876751a76a13cab156f04fde551473",
+  "score": 1.0,
+  "sha256": "e456179d4b9214c9e1c3ee9f70260ff66afb2eca29917bd421b397ec14400b3d",
+  "signer": "GNJz (Qquarts)",
+  "timestamp": "2026-03-01T10:04:40.587327Z",
+  "version": "v1.3",
+  "hash": "43f32e5c343ac5feb0387fb3e8411d8e69227d8fd68b66b1a267aa4afe6cc637"
+}

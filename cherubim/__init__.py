@@ -1,4 +1,4 @@
-"""Cherubim — Eden Basin Finder  v1.2.0
+"""Cherubim — Eden Basin Finder  v1.3.0
 
 "에덴은 좌표가 아니라 파라미터 상태(state basin)이다."
 
@@ -25,6 +25,17 @@
   extinction.py         — 궁창 붕괴 전이 곡선 + 대멸종 기능 매핑
                           FirmamentDecayEngine (integrity 1.0→0.0 전이)
                           ExtinctionMapper (지질 이벤트 × 궁창 상태 비교)
+
+확장 모듈 (v1.3.0 신규 — "우리가 잘못 알고 있는 것" 시뮬레이터):
+  coordinate_inverter.py — 좌표계 역전 시뮬레이터
+                           현재(북=위) vs 에덴 기준(남=위) 에덴 히트맵 비교
+                           자기장 방향 분석 + 단테 연옥산 위치 검증
+  calendar.py            — 시스템 시간 재계산 모듈
+                           세 가지 시계: AD달력 / 대홍수 기점 / 세차 위상
+                           세차 반주기 오차 40년 = 전환 마커 단위 분석
+  biology_baseline.py    — 생물 기준점 재설정
+                           에덴(FI=1.0) vs 현재(FI=0.0) 수명/신장/돌연변이 비교
+                           창세기 장수 기록 × 엔진 예측 교차 검증
 
 빠른 시작:
     from cherubim import EdenSearchEngine, make_antediluvian_space
@@ -153,8 +164,39 @@ from .extinction import (
     make_extinction_mapper,
     quick_extinction_analysis,
 )
+# ── 확장 모듈 v1.3.0 ──────────────────────────────────────────────────────────
+from .coordinate_inverter import (
+    CoordSystem,
+    CoordinateInverter,
+    CoordCompareResult,
+    MagneticDirectionAnalysis,
+    invert_lat, invert_lon,
+    current_to_inverted, inverted_to_current,
+    lat_label_inverted,
+    quick_coord_comparison,
+)
+from .calendar import (
+    SystemClock,
+    TimeSnapshot,
+    TROPICAL_YEAR_DAYS, SIDEREAL_YEAR_DAYS,
+    PRECESSION_PERIOD_YR, PRECESSION_HALF_YR,
+    AD_CURRENT, FLOOD_BCE_ESTIMATE, SYSTEM_YEAR,
+    PRECESSION_PHASE_NOW, HALF_CYCLE_OFFSET_YR,
+    TRANSITION_UNIT,
+    make_system_clock,
+    quick_time_analysis,
+)
+from .biology_baseline import (
+    BiologySnapshot,
+    BiologyBaseline,
+    EDEN_LIFESPAN_YR, EDEN_HEIGHT_CM,
+    OBS_LIFESPAN_YR, OBS_HEIGHT_CM,
+    GENESIS_RECORDS, GENESIS_AVG_LIFESPAN,
+    make_biology_baseline,
+    quick_biology_report,
+)
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__  = "GNJz (Qquarts)"
 __project__ = "Cherubim — Eden Basin Finder"
 
@@ -198,4 +240,24 @@ __all__ = [
     "THRESHOLD_ICE_SHEET", "THRESHOLD_MASS_EXT1", "THRESHOLD_RAIN_START",
     "THRESHOLD_MASS_EXT2", "THRESHOLD_COLLAPSE",
     "make_extinction_mapper", "quick_extinction_analysis",
+    # ── 확장 모듈 v1.3.0 ── "우리가 잘못 알고 있는 것" 시뮬레이터
+    # coordinate_inverter — 좌표계 역전
+    "CoordSystem", "CoordinateInverter", "CoordCompareResult",
+    "MagneticDirectionAnalysis",
+    "invert_lat", "invert_lon",
+    "current_to_inverted", "inverted_to_current", "lat_label_inverted",
+    "quick_coord_comparison",
+    # calendar — 시스템 시간 재계산
+    "SystemClock", "TimeSnapshot",
+    "TROPICAL_YEAR_DAYS", "SIDEREAL_YEAR_DAYS",
+    "PRECESSION_PERIOD_YR", "PRECESSION_HALF_YR",
+    "AD_CURRENT", "FLOOD_BCE_ESTIMATE", "SYSTEM_YEAR",
+    "PRECESSION_PHASE_NOW", "HALF_CYCLE_OFFSET_YR", "TRANSITION_UNIT",
+    "make_system_clock", "quick_time_analysis",
+    # biology_baseline — 생물 기준점 재설정
+    "BiologySnapshot", "BiologyBaseline",
+    "EDEN_LIFESPAN_YR", "EDEN_HEIGHT_CM",
+    "OBS_LIFESPAN_YR", "OBS_HEIGHT_CM",
+    "GENESIS_RECORDS", "GENESIS_AVG_LIFESPAN",
+    "make_biology_baseline", "quick_biology_report",
 ]

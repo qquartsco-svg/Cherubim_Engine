@@ -72,6 +72,17 @@ cherubim/
 └── extinction.py          — 궁창 붕괴 전이 곡선 + 지질 대멸종 기능 매핑
                              FirmamentDecayEngine: integrity 1.0→0.0 전이
                              ExtinctionMapper: 지질 이벤트 × 궁창 상태 비교
+│
+│  ── Extended (3, v1.3.0) — "우리가 잘못 알고 있는 것" 시뮬레이터 ──
+├── coordinate_inverter.py — 좌표계 역전 시뮬레이터
+│                            현재(북=위) vs 에덴 기준(남=위) 에덴 히트맵 비교
+│                            자기장 방향 분석 + 단테 연옥산 위치 검증
+├── calendar.py            — 시스템 시간 재계산 모듈
+│                            세 가지 시계: AD달력 / 대홍수 기점 / 세차 위상
+│                            세차 반주기 오차 40년 = 전환 마커 단위 분석
+└── biology_baseline.py    — 생물 기준점 재설정
+                             에덴(FI=1.0) vs 현재(FI=0.0) 수명/신장/돌연변이 비교
+                             창세기 장수 기록 × 엔진 예측 교차 검증
 ```
 
 ### 물리 → 생물 인과관계
@@ -236,6 +247,68 @@ fe = make_flood_engine(firmament_integrity=0.05)  # K-Pg 시나리오
 
 ---
 
+### 좌표계 역전 시뮬레이터 — "지도가 뒤집혀 있다" (v1.3.0)
+
+```python
+from cherubim import CoordinateInverter, quick_coord_comparison
+
+# 현재(북=위) vs 에덴 기준(남=위) 에덴 히트맵 비교
+quick_coord_comparison()
+# → 결론: 에덴은 현재 지도의 '아래'에 있다
+# → 82.5°S(↑위)  score=0.930  (전 지구 1위)
+
+inverter = CoordinateInverter()
+inverter.print_magnetic_analysis()
+# → 자기 N극 발원지(남극) = 에덴 기준 좌표계 위쪽
+```
+
+### 시스템 시간 재계산 — "달력이 틀렸다" (v1.3.0)
+
+```python
+from cherubim import SystemClock, quick_time_analysis
+
+quick_time_analysis()
+# → AD 2026년 = 시스템 클럭 12,926년의 15.7% 구간
+# → 세차 반주기(12,886년) 대비 +40년 오차
+# → TRANSITION_UNIT = 40 (모세 광야 40년과 동일 단위)
+```
+
+**출력 예시:**
+
+```
+[시계 2] 시스템 클럭 (대홍수 기점 경과)
+  대홍수 추정: BC 10,900년
+  경과: 12,926년
+
+[핵심 오차]
+  세차 반주기        = 12,886년
+  대홍수 이후 경과   = 12,926년
+  차이               = +40년  → 모세 광야 40년과 동일 단위
+```
+
+### 생물 기준점 재설정 — "우리가 다운그레이드됐다" (v1.3.0)
+
+```python
+from cherubim import BiologyBaseline, quick_biology_report
+
+quick_biology_report()
+# → 수명  80년  = 에덴 기준의 10.0%
+# → 신장  170cm = 에덴 기준의 55.6%
+# → 돌연변이율  100배 증가
+# → 종 다양성   에덴 기준의 4.2% 남음
+```
+
+**출력 예시:**
+
+```
+파라미터          에덴 기준    현재    현재/에덴
+수명               800년     80년     10.0%
+신장               306cm    170cm     55.6%
+돌연변이율        0.0100x  1.0000x   100배 증가
+암 발생률           0.40%   40.00%   100배 증가
+종 다양성           100%      4.2%    4.2% 남음
+```
+
 ### 외계 행성 거주 가능성 탐색
 
 ```python
@@ -309,6 +382,9 @@ EdenCriteria(
 | `basin_stability.py` | A_HIGH | 1.0000 | v1.1 |
 | `param_space.py` | A_HIGH | 1.0000 | v1.1 |
 | `extinction.py` | A_HIGH | 1.0000 | v1.2 |
+| `coordinate_inverter.py` | A_HIGH | 1.0000 | v1.3 |
+| `calendar.py` | A_HIGH | 1.0000 | v1.3 |
+| `biology_baseline.py` | A_HIGH | 1.0000 | v1.3 |
 
 서명 파일: `blockchain/pham_chain_*.json`
 
@@ -323,5 +399,5 @@ EdenCriteria(
 
 ---
 
-*v1.2.0 · PHAM Signed · GNJz (Qquarts)*
+*v1.3.0 · PHAM Signed · GNJz (Qquarts)*
 *"Cherubim — 에덴의 입구를 스캔하는 엔진"*

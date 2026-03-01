@@ -1,0 +1,12 @@
+{
+  "file": "cherubim/coordinate_inverter.py",
+  "grade": "A_HIGH",
+  "note": "CoordinateInverter — 현재(북=위) vs 에덴 기준(남=위) 좌표계 역전 + 단테 연옥산 검증",
+  "prev_hash": "81517ae0708b52444fbdab379f73609da2d535e658a970e496d73e90f2c169ff",
+  "score": 1.0,
+  "sha256": "61605c60b85320c0c20325355b8d877de04964df7667fae8efd86ad7d2ed1d78",
+  "signer": "GNJz (Qquarts)",
+  "timestamp": "2026-03-01T10:04:40.587327Z",
+  "version": "v1.3",
+  "hash": "a9fea367ff4cce53b2bcc2f87586a73932876751a76a13cab156f04fde551473"
+}
