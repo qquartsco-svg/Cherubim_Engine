@@ -1,4 +1,4 @@
-"""Cherubim — Eden Basin Finder  v1.1.0
+"""Cherubim — Eden Basin Finder  v1.2.0
 
 "에덴은 좌표가 아니라 파라미터 상태(state basin)이다."
 
@@ -20,6 +20,11 @@
   spatial_grid.py       — 행성 표면 2D 공간 탐사 (위도×경도 히트맵)
   basin_stability.py    — Ring Attractor 기반 에덴 Basin 안정성 검증
   param_space.py        — 2D~7D 다차원 파라미터 공간 탐사 (GridND)
+
+확장 모듈 (v1.2.0 신규):
+  extinction.py         — 궁창 붕괴 전이 곡선 + 대멸종 기능 매핑
+                          FirmamentDecayEngine (integrity 1.0→0.0 전이)
+                          ExtinctionMapper (지질 이벤트 × 궁창 상태 비교)
 
 빠른 시작:
     from cherubim import EdenSearchEngine, make_antediluvian_space
@@ -130,8 +135,26 @@ from .param_space import (
     H2O_AXIS,
     LAND_AXIS,
 )
+# ── 확장 모듈 v1.2.0 ──────────────────────────────────────────────────────────
+from .extinction import (
+    FirmamentSnapshot,
+    FirmamentDecayEngine,
+    ExtinctionEvent,
+    ExtinctionMapper,
+    GEOLOGICAL_EVENTS,
+    THRESHOLD_UV_DAMAGE,
+    THRESHOLD_POLAR_COLD,
+    THRESHOLD_SEASON_START,
+    THRESHOLD_ICE_SHEET,
+    THRESHOLD_MASS_EXT1,
+    THRESHOLD_RAIN_START,
+    THRESHOLD_MASS_EXT2,
+    THRESHOLD_COLLAPSE,
+    make_extinction_mapper,
+    quick_extinction_analysis,
+)
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __author__  = "GNJz (Qquarts)"
 __project__ = "Cherubim — Eden Basin Finder"
 
@@ -167,4 +190,12 @@ __all__ = [
     "EdenBasinShape", "EdenParamScanner", "make_param_scanner",
     "CO2_AXIS", "TEMP_AXIS", "O2_AXIS", "UV_AXIS",
     "ALB_AXIS", "H2O_AXIS", "LAND_AXIS",
+    # ── 확장 모듈 v1.2.0 ──
+    # extinction — 궁창 붕괴 전이 곡선 + 대멸종 매핑
+    "FirmamentSnapshot", "FirmamentDecayEngine",
+    "ExtinctionEvent", "ExtinctionMapper", "GEOLOGICAL_EVENTS",
+    "THRESHOLD_UV_DAMAGE", "THRESHOLD_POLAR_COLD", "THRESHOLD_SEASON_START",
+    "THRESHOLD_ICE_SHEET", "THRESHOLD_MASS_EXT1", "THRESHOLD_RAIN_START",
+    "THRESHOLD_MASS_EXT2", "THRESHOLD_COLLAPSE",
+    "make_extinction_mapper", "quick_extinction_analysis",
 ]

@@ -78,6 +78,7 @@ class FloodEngine:
         post_flood_T_K: float = 286.4,
         pre_flood_f_land: float = 0.40,
         post_flood_f_land: float = 0.29,
+        firmament_integrity: float = 1.0,  # 홍수 직전 궁창 완전도 [0~1]
     ) -> None:
         self._T_pre    = pre_flood_T_K
         self._T_post   = post_flood_T_K
@@ -85,6 +86,22 @@ class FloodEngine:
         self._fl_post  = post_flood_f_land
         self._t        = 0.0   # 홍수 발생 후 경과 시간 (yr)
         self._complete = False
+        # firmament_integrity: 궁창이 얼마나 손상된 채로 홍수를 맞이하는가
+        # 1.0 = 완전 활성 상태에서 홍수 (창세기 시나리오)
+        # 0.5 = 절반 손상 상태 (화산/충돌 선행 피해 시나리오)
+        # 0.0 = 이미 소멸 상태 (궁창 없이 홍수)
+        self._fi = max(0.0, min(1.0, firmament_integrity))
+
+    @property
+    def firmament_integrity(self) -> float:
+        """현재 궁창 완전도 (홍수 진행에 따라 감소)."""
+        t = self._t
+        if t <= 0.0:
+            return self._fi
+        # 홍수 진행 중: integrity가 홍수 기간 동안 1.0→0.0으로 감소
+        if t < 1.0:
+            return max(0.0, self._fi * (1.0 - t))
+        return 0.0
 
     # ── 공개 ──────────────────────────────────────────────
 
@@ -106,6 +123,7 @@ class FloodEngine:
             'sea_level_anomaly_m':  s.sea_level_anomaly_m,
             'UV_exposure':          s.UV_exposure,
             'flood_phase':          s.flood_phase,
+            'firmament_integrity':  self.firmament_integrity,  # 궁창 완전도
         }
 
     @property
@@ -222,11 +240,22 @@ def make_flood_engine(
     post_flood_T_celsius: float = 13.3,
     pre_flood_f_land: float = 0.40,
     post_flood_f_land: float = 0.29,
+    firmament_integrity: float = 1.0,
 ) -> FloodEngine:
-    """FloodEngine 팩토리 (섭씨 입력 허용)."""
+    """FloodEngine 팩토리 (섭씨 입력 허용).
+
+    Parameters
+    ----------
+    firmament_integrity : float
+        홍수 직전 궁창 완전도 [0~1].
+        1.0 = 창세기 시나리오 (완전 활성 → 대홍수)
+        0.3 = 페름기 시나리오 (화산 손상 후 붕괴)
+        0.05 = K-Pg 시나리오 (충돌 직전 거의 소멸)
+    """
     return FloodEngine(
-        pre_flood_T_K    = pre_flood_T_celsius + 273.15,
-        post_flood_T_K   = post_flood_T_celsius + 273.15,
-        pre_flood_f_land = pre_flood_f_land,
-        post_flood_f_land= post_flood_f_land,
+        pre_flood_T_K     = pre_flood_T_celsius + 273.15,
+        post_flood_T_K    = post_flood_T_celsius + 273.15,
+        pre_flood_f_land  = pre_flood_f_land,
+        post_flood_f_land = post_flood_f_land,
+        firmament_integrity = firmament_integrity,
     )
